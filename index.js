@@ -1,8 +1,10 @@
 const express = require("express");
 const moment = require("moment");
+const cors = require("cors");
 
 const app = express();
 
+app.use(cors({ optionsSuccessStatus: 200 }));
 app.use(express.static("client"));
 
 app.get("/api/timestamp/:date_string?", (req, res) => {
