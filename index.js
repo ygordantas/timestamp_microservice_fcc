@@ -1,20 +1,41 @@
 const express = require("express");
 const moment = require("moment");
-require("moment-timezone");
 
 const app = express();
 
 app.use(express.static("client"));
 
 app.get("/api/timestamp/:date_string?", (req, res) => {
-  if (!req.params.date_string) {
+  const inputDate = req.params.date_string;
+  if (!inputDate) {
     const date = new Date();
-    const unix = date.getTime();
-    const utc = moment(unix).tz.format("ddd, DD MMM YYYY H:mm:ss z");
     res.send({
-      unix,
-      utc
+      unix: date.getTime(),
+      utc: date.toUTCString()
     });
+  } else {
+    if (moment(inputDate, ["x", "X"], true).isValid()) {
+      const unix = +moment.unix(inputDate).format("x");
+      const utc = moment.unix(inputDate).format("ddd, DD MMM YYYY H:mm:ss");
+      res.send({
+        unix,
+        utc: new Date(utc).toUTCString()
+      });
+    } else if (
+      moment(
+        inputDate,
+        ["YYYY-MM-DD", "YYYY-M-DD", "YYYY-MM-D"],
+        true
+      ).isValid()
+    ) {
+      const date = new Date(inputDate);
+      res.send({
+        unix: date.getTime(),
+        utc: date.toUTCString()
+      });
+    } else {
+      res.send({ error: "Invalid Date" });
+    }
   }
 });
 
