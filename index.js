@@ -7,6 +7,10 @@ const app = express();
 app.use(cors({ optionsSuccessStatus: 200 }));
 app.use(express.static("client"));
 
+app.get("/", (req, res) => {
+  res.sendFile(`${__dirname}/client/index.html`);
+});
+
 app.get("/api/timestamp/:date_string?", (req, res) => {
   const inputDate = req.params.date_string;
   if (!inputDate) {
@@ -39,6 +43,10 @@ app.get("/api/timestamp/:date_string?", (req, res) => {
       res.send({ error: "Invalid Date" });
     }
   }
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(`${__dirname}/client/index.html`);
 });
 
 const PORT = process.env.PORT || "5000";
